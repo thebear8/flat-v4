@@ -1,0 +1,43 @@
+fn main(argc: i64, argv: char[][]): i64 {
+    let i = -1
+    while ((i = i + 1) < argc) {
+        print(argv[i][0])
+    }
+
+    if (3 > 2) {
+        print(51)
+    } else {
+        print(52)
+    }
+
+    return 1 + 2 + 3 + 4
+}
+
+fn print(x: i64): void { }
+fn print(x: char): void { }
+
+fn __add__(a: i64, b: i64): i64 { }
+fn __subtract__(a: i64, b: i64): i64 { }
+fn __multiply__(a: i64, b: i64): i64 { }
+fn __divide__(a: i64, b: i64): i64 { }
+fn __modulo__(a: i64, b: i64): i64 { }
+
+fn __bitand__(a: i64, b: i64): i64 { }
+fn __bitor__(a: i64, b: i64): i64 { }
+fn __bitxor__(a: i64, b: i64): i64 { }
+fn __lshift__(a: i64, b: i64): i64 { }
+fn __rshift__(a: i64, b: i64): i64 { }
+
+fn __and__(a: bool, b: bool): bool { }
+
+fn __equal__(a: i64, b: i64): bool { }
+fn __notequal__(a: i64, b: i64): bool { }
+fn __less__(a: i64, b: i64): bool { }
+fn __greater__(a: i64, b: i64): bool { }
+fn __lessorequal__(a: i64, b: i64): bool { }
+fn __greaterorequal__(a: i64, b: i64): bool { }
+
+fn __positive__(a: i64): i64 { }
+fn __negative__(a: i64): i64 { }
+fn __not__(a: i64): i64 { }
+fn __bitnot__(a: i64): i64 { }
