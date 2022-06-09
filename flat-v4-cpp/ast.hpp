@@ -10,7 +10,7 @@
 
 namespace AstExp
 {
-	using Visitor = ::Visitor<
+	using Visitor = visitor::Visitor<
 		struct AstNode,
 		struct Declaration,
 		struct Statement,
@@ -202,43 +202,22 @@ namespace AstExp
 	};
 }
 
-struct AstNode;
-struct IntegerExpression;
-struct IdentifierExpression;
-struct UnaryExpression;
-struct BinaryExpression;
-struct CallExpression;
-struct IndexExpression;
-
-struct BlockStatement;
-struct VariableStatement;
-struct ReturnStatement;
-struct WhileStatement;
-struct IfStatement;
-
-struct FunctionDeclaration;
-struct Module;
-
-struct AstVisitor
-{
-	virtual void visit(IntegerExpression* node) { }
-	virtual void visit(IdentifierExpression* node) { }
-	virtual void visit(UnaryExpression* node) { }
-	virtual void visit(BinaryExpression* node) { }
-	virtual void visit(CallExpression* node) { }
-	virtual void visit(IndexExpression* node) { }
-
-	virtual void visit(BlockStatement* node) { }
-	virtual void visit(VariableStatement* node) { }
-	virtual void visit(ReturnStatement* node) { }
-	virtual void visit(WhileStatement* node) { }
-	virtual void visit(IfStatement* node) { }
-
-	virtual void visit(FunctionDeclaration* node) { }
-	virtual void visit(Module* node) { }
-
-	virtual void visit(AstNode* node);
-};
+using Visitor = visitor::Visitor<
+	struct AstNode,
+	struct IntegerExpression,
+	struct IdentifierExpression,
+	struct UnaryExpression,
+	struct BinaryExpression,
+	struct CallExpression,
+	struct IndexExpression,
+	struct BlockStatement,
+	struct VariableStatement,
+	struct ReturnStatement,
+	struct WhileStatement,
+	struct IfStatement,
+	struct FunctionDeclaration,
+	struct Module
+>;
 
 struct AstNode
 {
@@ -247,15 +226,17 @@ struct AstNode
 	AstNode(size_t begin, size_t end) :
 		begin(begin), end(end) { }
 
-	virtual void accept(AstVisitor* visitor) { }
+	virtual void accept(Visitor* visitor) { }
 };
+
+#define IMPLEMENT_ACCEPT() void accept(Visitor* visitor) override { visitor->visit(this); }
 
 struct Declaration : public AstNode
 {
 	Declaration(size_t begin, size_t end) : 
 		AstNode(begin, end) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct Statement : public AstNode
@@ -263,7 +244,7 @@ struct Statement : public AstNode
 	Statement(size_t begin, size_t end) : 
 		AstNode(begin, end) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct Expression : public Statement
@@ -271,7 +252,7 @@ struct Expression : public Statement
 	Expression(size_t begin, size_t end) : 
 		Statement(begin, end) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 ///////////////////////////////////////////
@@ -284,7 +265,7 @@ struct UnaryExpression : public Expression
 	UnaryExpression(size_t begin, size_t end, Token type, std::shared_ptr<Expression> expression) : 
 		Expression(begin, end), type(type), expression(expression) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct BinaryExpression : public Expression
@@ -295,7 +276,7 @@ struct BinaryExpression : public Expression
 	BinaryExpression(size_t begin, size_t end, Token type, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right) : 
 		Expression(begin, end), type(type), left(left), right(right) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct IntegerExpression : public Expression
@@ -305,7 +286,7 @@ struct IntegerExpression : public Expression
 	IntegerExpression(size_t begin, size_t end, std::string value) : 
 		Expression(begin, end), value(value) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct IdentifierExpression : public Expression
@@ -315,7 +296,7 @@ struct IdentifierExpression : public Expression
 	IdentifierExpression(size_t begin, size_t end, std::string value) : 
 		Expression(begin, end), value(value) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct CallExpression : public Expression
@@ -327,7 +308,7 @@ struct CallExpression : public Expression
 	CallExpression(size_t begin, size_t end, std::shared_ptr<Expression> expression, std::vector<std::shared_ptr<Expression>> args) : 
 		Expression(begin, end), expression(expression), args(args) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct IndexExpression : public Expression
@@ -338,7 +319,7 @@ struct IndexExpression : public Expression
 	IndexExpression(size_t begin, size_t end, std::shared_ptr<Expression> expression, std::vector<std::shared_ptr<Expression>> args) : 
 		Expression(begin, end), expression(expression), args(args) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 ///////////////////////////////////////////
@@ -350,7 +331,7 @@ struct BlockStatement : public Statement
 	BlockStatement(size_t begin, size_t end, std::vector<std::shared_ptr<Statement>> statements) : 
 		Statement(begin, end), statements(statements) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct VariableStatement : public Statement
@@ -361,7 +342,7 @@ struct VariableStatement : public Statement
 	VariableStatement(size_t begin, size_t end, std::vector<std::string> names, std::vector<std::shared_ptr<Expression>> values) : 
 		Statement(begin, end), names(names), values(values) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct ReturnStatement : public Statement
@@ -371,7 +352,7 @@ struct ReturnStatement : public Statement
 	ReturnStatement(size_t begin, size_t end, std::shared_ptr<Expression> expression) : 
 		Statement(begin, end), expression(expression) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct WhileStatement : public Statement
@@ -382,7 +363,7 @@ struct WhileStatement : public Statement
 	WhileStatement(size_t begin, size_t end, std::shared_ptr<Expression> condition, std::shared_ptr<Statement> body) : 
 		Statement(begin, end), condition(condition), body(body) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 struct IfStatement : public Statement
@@ -393,7 +374,7 @@ struct IfStatement : public Statement
 	IfStatement(size_t begin, size_t end, std::shared_ptr<Expression> condition, std::shared_ptr<Statement> ifBody, std::shared_ptr<Statement> elseBody) : 
 		Statement(begin, end), condition(condition), ifBody(ifBody), elseBody(elseBody) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 ///////////////////////////////////////////
@@ -409,7 +390,7 @@ struct FunctionDeclaration : public Declaration
 	FunctionDeclaration(size_t begin, size_t end, std::string name, Type* result, std::vector<std::pair<std::string, Type*>> parameters, std::shared_ptr<Statement> body) : 
 		Declaration(begin, end), name(name), result(result), parameters(parameters), body(body) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
 
 ///////////////////////////////////////////
@@ -421,5 +402,5 @@ struct Module : public AstNode
 	Module(size_t begin, size_t end, std::vector<std::shared_ptr<Declaration>> declarations) : 
 		AstNode(begin, end), declarations(declarations) { }
 
-	void accept(AstVisitor* visitor) override { visitor->visit(this); }
+	IMPLEMENT_ACCEPT()
 };
